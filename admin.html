@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Mosque Prayer Times</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gold: #D4AF37;
+            --primary-green: #1B5E20;
+            --dark-teal: #004D40;
+            --light-cream: #FAF3E0;
+            --text-dark: #1A1A1A;
+            --text-light: #F5F5F5;
+            --accent-red: #C62828;
+            --shadow-soft: rgba(0, 0, 0, 0.1);
+            --shadow-deep: rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, var(--dark-teal) 0%, var(--primary-green) 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .login-container {
+            max-width: 450px;
+            margin: 100px auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px var(--shadow-deep);
+        }
+
+        .login-header {
+            font-family: 'Amiri', serif;
+            font-size: 2.5rem;
+            color: var(--primary-green);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .login-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #E0E0E0;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: 'Tajawal', sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-gold);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary-green), var(--dark-teal));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px var(--shadow-soft);
+        }
+
+        .admin-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px var(--shadow-deep);
+            display: none;
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--primary-gold);
+        }
+
+        .panel-title {
+            font-family: 'Amiri', serif;
+            font-size: 2.5rem;
+            color: var(--primary-green);
+        }
+
+        .logout-btn {
+            padding: 10px 25px;
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: transform 0.3s;
+        }
+
+        .logout-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #E0E0E0;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 25px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            color: var(--primary-green);
+            border-bottom-color: var(--primary-gold);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .btn-secondary {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, var(--primary-gold), #C9A135);
+            color: var(--text-dark);
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .add-form {
+            display: none;
+            margin-top: 20px;
+            padding: 25px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            border: 2px solid var(--primary-gold);
+        }
+
+        .add-form.active {
+            display: block;
+        }
+
+        .add-form h3 {
+            margin-bottom: 20px;
+            color: var(--primary-green);
+        }
+
+        .mosque-list {
+            display: grid;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .mosque-item {
+            padding: 25px;
+            background: #F5F5F5;
+            border-radius: 10px;
+            border-left: 5px solid var(--primary-gold);
+        }
+
+        .mosque-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .mosque-item-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-green);
+        }
+
+        .time-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .time-input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .time-input-label {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .time-input {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .time-input:focus {
+            outline: none;
+            border-color: var(--primary-gold);
+        }
+
+        .btn-danger {
+            padding: 8px 15px;
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.3s;
+        }
+
+        .btn-danger:hover {
+            transform: scale(1.05);
+        }
+
+        .subadmin-list {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .subadmin-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: #F5F5F5;
+            border-radius: 10px;
+            border-left: 5px solid var(--primary-gold);
+        }
+
+        .subadmin-email {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .error-message {
+            color: var(--accent-red);
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.active {
+            display: block;
+        }
+
+        .success-message {
+            padding: 15px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message.active {
+            display: block;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 12px;
+            background: #9E9E9E;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-submit {
+            flex: 1;
+            padding: 12px;
+            background: var(--primary-green);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .time-inputs {
+                grid-template-columns: 1fr;
+            }
+
+            .panel-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Form -->
+    <div class="login-container" id="loginContainer">
+        <h1 class="login-header">Admin Panel</h1>
+        <p class="login-subtitle">Mosque Prayer Times Management</p>
+        <form onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-input" id="loginEmail" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-input" id="loginPassword" required>
+            </div>
+            <div class="error-message" id="loginError">Invalid credentials!</div>
+            <button type="submit" class="btn-primary">Login</button>
+        </form>
+    </div>
+
+    <!-- Admin Panel -->
+    <div class="container">
+        <div class="admin-panel" id="adminPanel">
+            <div class="panel-header">
+                <h1 class="panel-title">Admin Dashboard</h1>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+
+            <div class="success-message" id="successMessage"></div>
+
+            <div class="admin-tabs">
+                <button class="tab-btn active" onclick="switchTab('mosques')">Manage Mosques</button>
+                <button class="tab-btn" onclick="switchTab('subadmins')">Sub-Admins</button>
+                <button class="tab-btn" onclick="switchTab('notification')">Emergency Notice</button>
+            </div>
+
+            <!-- Mosques Tab -->
+            <div class="tab-content active" id="mosques-tab">
+                <button class="btn-secondary" onclick="toggleAddMosqueForm()">+ Add New Mosque</button>
+                
+                <div class="add-form" id="addMosqueForm">
+                    <h3>Add New Mosque</h3>
+                    <div class="form-group">
+                        <label class="form-label">Mosque Name</label>
+                        <input type="text" class="form-input" id="newMosqueName">
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn-cancel" onclick="toggleAddMosqueForm()">Cancel</button>
+                        <button class="btn-submit" onclick="addMosque()">Add Mosque</button>
+                    </div>
+                </div>
+
+                <div class="mosque-list" id="mosqueList"></div>
+            </div>
+
+            <!-- Sub-Admins Tab -->
+            <div class="tab-content" id="subadmins-tab">
+                <button class="btn-secondary" onclick="toggleAddSubadminForm()">+ Add Sub-Admin</button>
+                
+                <div class="add-form" id="addSubadminForm">
+                    <h3>Add New Sub-Admin</h3>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" id="newSubadminEmail">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-input" id="newSubadminPassword">
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn-cancel" onclick="toggleAddSubadminForm()">Cancel</button>
+                        <button class="btn-submit" onclick="addSubadmin()">Add Sub-Admin</button>
+                    </div>
+                </div>
+
+                <div class="subadmin-list" id="subadminList"></div>
+            </div>
+
+            <!-- Notification Tab -->
+            <div class="tab-content" id="notification-tab">
+                <div class="form-group">
+                    <label class="form-label">Emergency Notification Message</label>
+                    <textarea class="form-input" id="notificationMessage" rows="4" placeholder="Enter emergency message..."></textarea>
+                </div>
+                <div class="btn-group">
+                    <button class="btn-danger" onclick="clearNotification()">Clear Notification</button>
+                    <button class="btn-submit" onclick="updateNotification()">Update Notification</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load data from localStorage
+        function loadData() {
+            const saved = localStorage.getItem('mosqueAppData');
+            if (saved) {
+                return JSON.parse(saved);
+            }
+            return {
+                admin: {
+                    email: 'admin@mosque.com',
+                    password: 'admin123'
+                },
+                subadmins: [],
+                mosques: [],
+                notification: ''
+            };
+        }
+
+        // Save data to localStorage
+        function saveData(data) {
+            localStorage.setItem('mosqueAppData', JSON.stringify(data));
+        }
+
+        // Show success message
+        function showSuccess(message) {
+            const successEl = document.getElementById('successMessage');
+            successEl.textContent = message;
+            successEl.classList.add('active');
+            setTimeout(() => {
+                successEl.classList.remove('active');
+            }, 3000);
+        }
+
+        // Handle login
+        function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const data = loadData();
+
+            if (email === data.admin.email && password === data.admin.password) {
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('adminPanel').classList.add('active');
+                document.getElementById('loginError').classList.remove('active');
+                loadAdminData();
+            } else {
+                document.getElementById('loginError').classList.add('active');
+            }
+        }
+
+        // Logout
+        function logout() {
+            document.getElementById('loginContainer').style.display = 'block';
+            document.getElementById('adminPanel').classList.remove('active');
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+        }
+
+        // Load admin data
+        function loadAdminData() {
+            renderMosques();
+            renderSubadmins();
+            const data = loadData();
+            document.getElementById('notificationMessage').value = data.notification;
+        }
+
+        // Switch tabs
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+
+        // Toggle add mosque form
+        function toggleAddMosqueForm() {
+            const form = document.getElementById('addMosqueForm');
+            form.classList.toggle('active');
+            if (!form.classList.contains('active')) {
+                document.getElementById('newMosqueName').value = '';
+            }
+        }
+
+        // Add mosque
+        function addMosque() {
+            const name = document.getElementById('newMosqueName').value.trim();
+            if (!name) {
+                alert('Please enter a mosque name');
+                return;
+            }
+
+            const data = loadData();
+            const newMosque = {
+                id: Date.now(),
+                name: name,
+                times: {
+                    fajr: '05:30',
+                    zuhr: '13:00',
+                    asr: '16:30',
+                    maghrib: '18:45',
+                    isha: '20:15'
+                }
+            };
+
+            data.mosques.push(newMosque);
+            saveData(data);
+            renderMosques();
+            toggleAddMosqueForm();
+            showSuccess('Mosque added successfully!');
+        }
+
+        // Render mosques
+        function renderMosques() {
+            const data = loadData();
+            const list = document.getElementById('mosqueList');
+            list.innerHTML = data.mosques.map(mosque => `
+                <div class="mosque-item">
+                    <div class="mosque-item-header">
+                        <span class="mosque-item-name">${mosque.name}</span>
+                        <button class="btn-danger" onclick="deleteMosque(${mosque.id})">Delete</button>
+                    </div>
+                    <div class="time-inputs">
+                        <div class="time-input-group">
+                            <label class="time-input-label">Fajr</label>
+                            <input type="time" class="time-input" value="${mosque.times.fajr}" 
+                                onchange="updateTime(${mosque.id}, 'fajr', this.value)">
+                        </div>
+                        <div class="time-input-group">
+                            <label class="time-input-label">Zuhr</label>
+                            <input type="time" class="time-input" value="${mosque.times.zuhr}" 
+                                onchange="updateTime(${mosque.id}, 'zuhr', this.value)">
+                        </div>
+                        <div class="time-input-group">
+                            <label class="time-input-label">Asr</label>
+                            <input type="time" class="time-input" value="${mosque.times.asr}" 
+                                onchange="updateTime(${mosque.id}, 'asr', this.value)">
+                        </div>
+                        <div class="time-input-group">
+                            <label class="time-input-label">Maghrib</label>
+                            <input type="time" class="time-input" value="${mosque.times.maghrib}" 
+                                onchange="updateTime(${mosque.id}, 'maghrib', this.value)">
+                        </div>
+                        <div class="time-input-group">
+                            <label class="time-input-label">Isha</label>
+                            <input type="time" class="time-input" value="${mosque.times.isha}" 
+                                onchange="updateTime(${mosque.id}, 'isha', this.value)">
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Update prayer time
+        function updateTime(mosqueId, prayer, time) {
+            const data = loadData();
+            const mosque = data.mosques.find(m => m.id === mosqueId);
+            if (mosque) {
+                mosque.times[prayer] = time;
+                saveData(data);
+                showSuccess('Prayer time updated!');
+            }
+        }
+
+        // Delete mosque
+        function deleteMosque(id) {
+            if (confirm('Are you sure you want to delete this mosque?')) {
+                const data = loadData();
+                data.mosques = data.mosques.filter(m => m.id !== id);
+                saveData(data);
+                renderMosques();
+                showSuccess('Mosque deleted successfully!');
+            }
+        }
+
+        // Toggle add subadmin form
+        function toggleAddSubadminForm() {
+            const form = document.getElementById('addSubadminForm');
+            form.classList.toggle('active');
+            if (!form.classList.contains('active')) {
+                document.getElementById('newSubadminEmail').value = '';
+                document.getElementById('newSubadminPassword').value = '';
+            }
+        }
+
+        // Add sub-admin
+        function addSubadmin() {
+            const email = document.getElementById('newSubadminEmail').value.trim();
+            const password = document.getElementById('newSubadminPassword').value.trim();
+
+            if (!email || !password) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            const data = loadData();
+            if (data.subadmins.some(sa => sa.email === email)) {
+                alert('This email is already registered');
+                return;
+            }
+
+            data.subadmins.push({ email, password });
+            saveData(data);
+            renderSubadmins();
+            toggleAddSubadminForm();
+            showSuccess('Sub-admin added successfully!');
+        }
+
+        // Render sub-admins
+        function renderSubadmins() {
+            const data = loadData();
+            const list = document.getElementById('subadminList');
+            list.innerHTML = data.subadmins.map((sa, index) => `
+                <div class="subadmin-item">
+                    <span class="subadmin-email">${sa.email}</span>
+                    <button class="btn-danger" onclick="deleteSubadmin(${index})">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        // Delete sub-admin
+        function deleteSubadmin(index) {
+            if (confirm('Are you sure you want to delete this sub-admin?')) {
+                const data = loadData();
+                data.subadmins.splice(index, 1);
+                saveData(data);
+                renderSubadmins();
+                showSuccess('Sub-admin deleted successfully!');
+            }
+        }
+
+        // Update notification
+        function updateNotification() {
+            const message = document.getElementById('notificationMessage').value.trim();
+            const data = loadData();
+            data.notification = message;
+            saveData(data);
+            showSuccess('Notification updated successfully!');
+        }
+
+        // Clear notification
+        function clearNotification() {
+            const data = loadData();
+            data.notification = '';
+            document.getElementById('notificationMessage').value = '';
+            saveData(data);
+            showSuccess('Notification cleared!');
+        }
+    </script>
+</body>
+</html>

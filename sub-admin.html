@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sub-Admin Panel - Mosque Prayer Times</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gold: #D4AF37;
+            --primary-green: #1B5E20;
+            --dark-teal: #004D40;
+            --light-cream: #FAF3E0;
+            --text-dark: #1A1A1A;
+            --text-light: #F5F5F5;
+            --accent-red: #C62828;
+            --shadow-soft: rgba(0, 0, 0, 0.1);
+            --shadow-deep: rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, var(--dark-teal) 0%, var(--primary-green) 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .login-container {
+            max-width: 450px;
+            margin: 100px auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px var(--shadow-deep);
+        }
+
+        .login-header {
+            font-family: 'Amiri', serif;
+            font-size: 2.5rem;
+            color: var(--primary-green);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .login-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #E0E0E0;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: 'Tajawal', sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-gold);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary-green), var(--dark-teal));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px var(--shadow-soft);
+        }
+
+        .subadmin-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px var(--shadow-deep);
+            display: none;
+        }
+
+        .subadmin-panel.active {
+            display: block;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--primary-gold);
+        }
+
+        .panel-title {
+            font-family: 'Amiri', serif;
+            font-size: 2.5rem;
+            color: var(--primary-green);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        .user-email {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            padding: 10px 25px;
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: transform 0.3s;
+        }
+
+        .logout-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .info-banner {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.05));
+            border-left: 5px solid var(--primary-gold);
+            padding: 15px 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+
+        .info-banner p {
+            color: #666;
+            margin: 0;
+        }
+
+        .mosque-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .mosque-item {
+            padding: 25px;
+            background: #F5F5F5;
+            border-radius: 10px;
+            border-left: 5px solid var(--primary-gold);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .mosque-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--shadow-soft);
+        }
+
+        .mosque-item-header {
+            margin-bottom: 20px;
+        }
+
+        .mosque-item-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-green);
+            margin-bottom: 5px;
+        }
+
+        .mosque-item-subtitle {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .time-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .time-input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .time-input-label {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .time-input {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .time-input:focus {
+            outline: none;
+            border-color: var(--primary-gold);
+        }
+
+        .error-message {
+            color: var(--accent-red);
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.active {
+            display: block;
+        }
+
+        .success-message {
+            padding: 15px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .success-message.active {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .no-mosques {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .no-mosques i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .time-inputs {
+                grid-template-columns: 1fr;
+            }
+
+            .panel-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .user-info {
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Form -->
+    <div class="login-container" id="loginContainer">
+        <h1 class="login-header">Sub-Admin Panel</h1>
+        <p class="login-subtitle">Mosque Prayer Times Management</p>
+        <form onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-input" id="loginEmail" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-input" id="loginPassword" required>
+            </div>
+            <div class="error-message" id="loginError">Invalid credentials!</div>
+            <button type="submit" class="btn-primary">Login</button>
+        </form>
+    </div>
+
+    <!-- Sub-Admin Panel -->
+    <div class="container">
+        <div class="subadmin-panel" id="subadminPanel">
+            <div class="panel-header">
+                <h1 class="panel-title">Sub-Admin Dashboard</h1>
+                <div class="user-info">
+                    <span class="user-email" id="userEmail"></span>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </div>
+
+            <div class="info-banner">
+                <p>📝 You can update prayer times for all mosques. Changes will be reflected on the main display page immediately.</p>
+            </div>
+
+            <div class="success-message" id="successMessage"></div>
+
+            <div class="mosque-list" id="mosqueList"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentUserEmail = '';
+
+        // Load data from localStorage
+        function loadData() {
+            const saved = localStorage.getItem('mosqueAppData');
+            if (saved) {
+                return JSON.parse(saved);
+            }
+            return {
+                admin: {
+                    email: 'admin@mosque.com',
+                    password: 'admin123'
+                },
+                subadmins: [],
+                mosques: [],
+                notification: ''
+            };
+        }
+
+        // Save data to localStorage
+        function saveData(data) {
+            localStorage.setItem('mosqueAppData', JSON.stringify(data));
+        }
+
+        // Show success message
+        function showSuccess(message) {
+            const successEl = document.getElementById('successMessage');
+            successEl.textContent = message;
+            successEl.classList.add('active');
+            setTimeout(() => {
+                successEl.classList.remove('active');
+            }, 3000);
+        }
+
+        // Handle login
+        function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const data = loadData();
+
+            // Check sub-admin credentials
+            const subadmin = data.subadmins.find(sa => sa.email === email && sa.password === password);
+            
+            if (subadmin) {
+                currentUserEmail = email;
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('subadminPanel').classList.add('active');
+                document.getElementById('loginError').classList.remove('active');
+                document.getElementById('userEmail').textContent = email;
+                renderMosques();
+            } else {
+                document.getElementById('loginError').classList.add('active');
+            }
+        }
+
+        // Logout
+        function logout() {
+            currentUserEmail = '';
+            document.getElementById('loginContainer').style.display = 'block';
+            document.getElementById('subadminPanel').classList.remove('active');
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+        }
+
+        // Render mosques
+        function renderMosques() {
+            const data = loadData();
+            const list = document.getElementById('mosqueList');
+            
+            if (data.mosques.length === 0) {
+                list.innerHTML = `
+                    <div class="no-mosques">
+                        <i>🕌</i>
+                        <h3>No Mosques Added Yet</h3>
+                        <p>Please contact the administrator to add mosques.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = data.mosques.map(mosque => `
+                <div class="mosque-item">
+                    <div class="mosque-item-header">
+                        <div class="mosque-item-name">${mosque.name}</div>
+                        <div class="mosque-item-subtitle">Update prayer times below</div>
+                    </div>
+                    <div class="time-inputs">
+                        <div class="time-input-group">
+                            <label class="time-input-label">Fajr</label>
+                            <input type="time" class="time-input" value="${mosque.times.fajr}" 
+                                onchange="updateTime(${mosque.id}, 'fajr', this.value)">
+                        </div>
+                        <div class="time-input-group">
+                            <label class="time-input-label">Zuhr</label>
+                            <input type="time" class="time-input" value="${mosque.times.zuhr}" 
+                                onchange="updateTime(${mosque.id}, 'zuhr', this.value)">
+                        </div>
+                        <div class="time-input-group">
+                            <label class="time-input-label">Asr</label>
+                            <input type="time" class="time-input" value="${mosque.times.asr}" 
+                                onchange="updateTime(${mosque.id}, 'asr', this.value)">
+                        </div>
+                        <div class="time-input-group">
+                            <label class="time-input-label">Maghrib</label>
+                            <input type="time" class="time-input" value="${mosque.times.maghrib}" 
+                                onchange="updateTime(${mosque.id}, 'maghrib', this.value)">
+                        </div>
+                        <div class="time-input-group">
+                            <label class="time-input-label">Isha</label>
+                            <input type="time" class="time-input" value="${mosque.times.isha}" 
+                                onchange="updateTime(${mosque.id}, 'isha', this.value)">
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Update prayer time
+        function updateTime(mosqueId, prayer, time) {
+            const data = loadData();
+            const mosque = data.mosques.find(m => m.id === mosqueId);
+            if (mosque) {
+                mosque.times[prayer] = time;
+                saveData(data);
+                showSuccess(`${prayer.charAt(0).toUpperCase() + prayer.slice(1)} time updated successfully!`);
+            }
+        }
+
+        // Auto-refresh mosques if admin makes changes
+        setInterval(() => {
+            if (document.getElementById('subadminPanel').classList.contains('active')) {
+                const currentData = loadData();
+                renderMosques();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

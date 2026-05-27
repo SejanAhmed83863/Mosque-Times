@@ -6,375 +6,205 @@
     <title>Masjid Prayer Times - جماعت کے اوقات</title>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --primary-gold: #D4AF37;
-            --primary-green: #1B5E20;
-            --dark-teal: #004D40;
-            --light-cream: #FAF3E0;
-            --text-dark: #1A1A1A;
-            --text-light: #F5F5F5;
-            --accent-red: #C62828;
-            --shadow-soft: rgba(0, 0, 0, 0.1);
-            --shadow-deep: rgba(0, 0, 0, 0.3);
+            --gold: #D4AF37;
+            --green: #1B5E20;
+            --teal: #004D40;
+            --cream: #FAF3E0;
+            --red: #C62828;
+            --shadow: rgba(0,0,0,0.3);
         }
-
         body {
             font-family: 'Tajawal', sans-serif;
-            background: linear-gradient(135deg, var(--dark-teal) 0%, var(--primary-green) 100%);
+            background: linear-gradient(135deg, var(--teal) 0%, var(--green) 100%);
             min-height: 100vh;
-            position: relative;
             overflow-x: hidden;
         }
-
-        /* Islamic Pattern Background */
         body::before {
             content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0.03;
-            background-image: 
-                repeating-linear-gradient(45deg, transparent, transparent 35px, var(--primary-gold) 35px, var(--primary-gold) 70px),
-                repeating-linear-gradient(-45deg, transparent, transparent 35px, var(--primary-gold) 35px, var(--primary-gold) 70px);
-            pointer-events: none;
-            z-index: 0;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0.04;
+            background-image:
+                repeating-linear-gradient(60deg, transparent, transparent 40px, var(--gold) 40px, var(--gold) 41px),
+                repeating-linear-gradient(-60deg, transparent, transparent 40px, var(--gold) 40px, var(--gold) 41px),
+                repeating-linear-gradient(0deg, transparent, transparent 40px, var(--gold) 40px, var(--gold) 41px);
+            pointer-events: none; z-index: 0;
         }
+        .app { position: relative; z-index: 1; }
 
-        .app-container {
-            position: relative;
-            z-index: 1;
+        /* Notification */
+        .notif-bar {
+            background: linear-gradient(90deg, var(--red), #B71C1C);
+            color: #fff; padding: 14px 20px; text-align: center;
+            font-size: 1rem; font-weight: 600;
+            display: none; animation: slideDown 0.5s ease;
+            letter-spacing: 0.5px;
         }
-
-        /* Emergency Notification Bar */
-        .notification-bar {
-            background: linear-gradient(90deg, var(--accent-red), #D32F2F);
-            color: var(--text-light);
-            padding: 15px 20px;
-            text-align: center;
-            font-weight: 500;
-            box-shadow: 0 4px 6px var(--shadow-soft);
-            display: none;
-            animation: slideDown 0.5s ease-out;
-        }
-
-        .notification-bar.active {
-            display: block;
-        }
-
+        .notif-bar.on { display: block; }
         @keyframes slideDown {
-            from {
-                transform: translateY(-100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+            from { transform: translateY(-100%); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
         }
 
         /* Header */
         .header {
-            background: linear-gradient(135deg, rgba(0, 77, 64, 0.95), rgba(27, 94, 32, 0.95));
-            backdrop-filter: blur(10px);
-            padding: 30px 20px;
+            background: linear-gradient(135deg, rgba(0,77,64,0.97), rgba(27,94,32,0.97));
+            padding: 35px 20px 30px;
             text-align: center;
-            border-bottom: 3px solid var(--primary-gold);
-            box-shadow: 0 4px 20px var(--shadow-deep);
+            border-bottom: 3px solid var(--gold);
+            box-shadow: 0 6px 30px var(--shadow);
         }
-
-        .header-title {
+        .header-arabic {
             font-family: 'Amiri', serif;
-            font-size: 3rem;
-            color: var(--primary-gold);
-            text-shadow: 2px 2px 4px var(--shadow-deep);
-            margin-bottom: 10px;
-            letter-spacing: 2px;
+            font-size: 3.2rem; color: var(--gold);
+            text-shadow: 1px 2px 8px rgba(0,0,0,0.4);
+            letter-spacing: 3px; margin-bottom: 8px;
+        }
+        .header-english {
+            font-size: 1.4rem; color: var(--cream);
+            font-weight: 300; opacity: 0.92;
+            letter-spacing: 1px;
+        }
+        .live-clock {
+            margin-top: 14px;
+            font-size: 1.15rem; color: #fff;
+            font-weight: 500; opacity: 0.85;
         }
 
-        .header-subtitle {
-            font-size: 1.5rem;
-            color: var(--text-light);
-            font-weight: 300;
-            opacity: 0.9;
-        }
-
-        .current-time {
-            margin-top: 15px;
-            font-size: 1.2rem;
-            color: var(--light-cream);
-            font-weight: 500;
-        }
-
-        /* Main Content */
-        .main-content {
-            max-width: 1400px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        /* Mosque Cards Grid */
-        .mosques-grid {
+        /* Grid */
+        .main { max-width: 1400px; margin: 45px auto; padding: 0 25px; }
+        .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 30px; margin-bottom: 50px;
         }
 
-        .mosque-card {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 40px var(--shadow-deep);
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        /* Card */
+        .card {
+            background: rgba(255,255,255,0.97);
+            border-radius: 22px; padding: 30px 28px;
+            box-shadow: 0 12px 40px var(--shadow);
+            position: relative; overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
         }
-
-        .mosque-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 50px var(--shadow-deep);
+        .card:hover { transform: translateY(-6px); box-shadow: 0 18px 55px var(--shadow); }
+        .card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
+            background: linear-gradient(90deg, var(--gold), var(--green), var(--gold));
         }
-
-        .mosque-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, var(--primary-gold), var(--primary-green));
+        .card-crescent {
+            position: absolute; top: 16px; right: 18px;
+            font-size: 3.5rem; color: var(--gold); opacity: 0.09;
+            line-height: 1;
         }
-
-        .mosque-card::after {
-            content: '☪';
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 3rem;
-            color: var(--primary-gold);
-            opacity: 0.1;
-        }
-
         .mosque-name {
             font-family: 'Amiri', serif;
-            font-size: 1.8rem;
-            color: var(--primary-green);
-            margin-bottom: 20px;
-            font-weight: 700;
+            font-size: 1.75rem; color: var(--green);
+            font-weight: 700; margin-bottom: 22px;
         }
 
-        .prayer-times {
-            display: grid;
-            gap: 15px;
-        }
-
+        /* Prayer rows */
         .prayer-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 15px;
-            background: linear-gradient(90deg, rgba(27, 94, 32, 0.05), transparent);
-            border-left: 4px solid var(--primary-gold);
-            border-radius: 8px;
-            transition: all 0.3s ease;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 11px 14px;
+            background: linear-gradient(90deg, rgba(27,94,32,0.06), transparent);
+            border-left: 4px solid var(--gold);
+            border-radius: 8px; margin-bottom: 10px;
+            transition: all 0.25s;
         }
-
-        .prayer-row:hover {
-            background: linear-gradient(90deg, rgba(27, 94, 32, 0.1), transparent);
-            transform: translateX(5px);
-        }
-
-        .prayer-name {
-            font-weight: 600;
-            color: var(--text-dark);
-            font-size: 1.1rem;
-        }
-
-        .prayer-time {
-            font-family: 'Amiri', serif;
-            font-size: 1.3rem;
-            color: var(--primary-green);
-            font-weight: 700;
-        }
+        .prayer-row:last-child { margin-bottom: 0; }
+        .prayer-row:hover { background: linear-gradient(90deg, rgba(27,94,32,0.13), transparent); transform: translateX(4px); }
+        .p-name { font-weight: 700; color: #222; font-size: 1.05rem; }
+        .p-time { font-family: 'Amiri', serif; font-size: 1.3rem; color: var(--green); font-weight: 700; }
 
         /* Footer */
-        .footer {
-            text-align: center;
-            padding: 30px 20px;
-            color: var(--light-cream);
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
+        footer { text-align: center; padding: 30px; color: rgba(255,255,255,0.7); font-size: 0.9rem; }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .header-title {
-                font-size: 2rem;
-            }
-
-            .header-subtitle {
-                font-size: 1.2rem;
-            }
-
-            .mosques-grid {
-                grid-template-columns: 1fr;
-            }
+        @media(max-width:600px){
+            .header-arabic { font-size: 2.1rem; }
+            .grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Emergency Notification Bar -->
-        <div class="notification-bar" id="notificationBar"></div>
+<div class="app">
+    <div class="notif-bar" id="notifBar"></div>
 
-        <!-- Header -->
-        <header class="header">
-            <h1 class="header-title">مسجد جماعت کے اوقات</h1>
-            <p class="header-subtitle">Mosque Prayer Times</p>
-            <div class="current-time" id="currentTime"></div>
-        </header>
+    <header class="header">
+        <div class="header-arabic">مسجد جماعت کے اوقات</div>
+        <div class="header-english">Mosque Jamaat Prayer Times</div>
+        <div class="live-clock" id="clock"></div>
+    </header>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <div class="mosques-grid" id="mosquesGrid"></div>
-        </main>
+    <main class="main">
+        <div class="grid" id="grid"></div>
+    </main>
 
-        <!-- Footer -->
-        <footer class="footer">
-            <p>May Allah accept our prayers • جزاک اللہ خیرا</p>
-        </footer>
-    </div>
+    <footer>May Allah accept our prayers &nbsp;•&nbsp; جزاک اللہ خیرا</footer>
+</div>
 
-    <script>
-        // Load data from localStorage
-        function loadData() {
-            const saved = localStorage.getItem('mosqueAppData');
-            if (saved) {
-                return JSON.parse(saved);
-            }
-            // Default data if nothing in localStorage
-            return {
-                mosques: [
-                    {
-                        id: 1,
-                        name: 'Central Masjid',
-                        times: {
-                            fajr: '05:30',
-                            zuhr: '13:00',
-                            asr: '16:30',
-                            maghrib: '18:45',
-                            isha: '20:15'
-                        }
-                    },
-                    {
-                        id: 2,
-                        name: 'Al-Noor Masjid',
-                        times: {
-                            fajr: '05:35',
-                            zuhr: '13:05',
-                            asr: '16:35',
-                            maghrib: '18:50',
-                            isha: '20:20'
-                        }
-                    }
-                ],
-                notification: ''
-            };
-        }
+<script>
+    const PRAYERS = ['fajr','zuhr','asr','maghrib','isha'];
+    const PRAYER_LABELS = { fajr:'Fajr', zuhr:'Zuhr', asr:'Asr', maghrib:'Maghrib', isha:'Isha' };
 
-        // Initialize app
-        function init() {
-            const appData = loadData();
-            updateCurrentTime();
-            setInterval(updateCurrentTime, 1000);
-            renderMosques(appData.mosques);
-            renderNotification(appData.notification);
-        }
+    function loadData() {
+        const s = localStorage.getItem('mosqueApp');
+        if (s) return JSON.parse(s);
+        return {
+            admin: { email:'admin@mosque.com', password:'admin123' },
+            subadmins: [],
+            mosques: [
+                { id:1, name:'Central Masjid',  times:{ fajr:'05:30', zuhr:'13:00', asr:'16:30', maghrib:'18:45', isha:'20:15' } },
+                { id:2, name:'Al-Noor Masjid',  times:{ fajr:'05:35', zuhr:'13:05', asr:'16:35', maghrib:'18:50', isha:'20:20' } }
+            ],
+            notification: ''
+        };
+    }
 
-        // Update current time
-        function updateCurrentTime() {
-            const now = new Date();
-            const options = { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            };
-            document.getElementById('currentTime').textContent = now.toLocaleDateString('en-US', options);
-        }
+    function to12(t24) {
+        if (!t24) return '--:-- --';
+        const [hStr, mStr] = t24.split(':');
+        let h = parseInt(hStr), m = mStr;
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        h = h % 12 || 12;
+        return `${h}:${m} ${ampm}`;
+    }
 
-        // Render mosques on main page
-        function renderMosques(mosques) {
-            const grid = document.getElementById('mosquesGrid');
-            grid.innerHTML = mosques.map(mosque => `
-                <div class="mosque-card">
-                    <h3 class="mosque-name">${mosque.name}</h3>
-                    <div class="prayer-times">
-                        <div class="prayer-row">
-                            <span class="prayer-name">Fajr</span>
-                            <span class="prayer-time">${mosque.times.fajr}</span>
-                        </div>
-                        <div class="prayer-row">
-                            <span class="prayer-name">Zuhr</span>
-                            <span class="prayer-time">${mosque.times.zuhr}</span>
-                        </div>
-                        <div class="prayer-row">
-                            <span class="prayer-name">Asr</span>
-                            <span class="prayer-time">${mosque.times.asr}</span>
-                        </div>
-                        <div class="prayer-row">
-                            <span class="prayer-name">Maghrib</span>
-                            <span class="prayer-time">${mosque.times.maghrib}</span>
-                        </div>
-                        <div class="prayer-row">
-                            <span class="prayer-name">Isha</span>
-                            <span class="prayer-time">${mosque.times.isha}</span>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
+    function render() {
+        const d = loadData();
+        // Notification
+        const nb = document.getElementById('notifBar');
+        if (d.notification) { nb.textContent = d.notification; nb.classList.add('on'); }
+        else { nb.classList.remove('on'); }
+        // Mosques
+        const grid = document.getElementById('grid');
+        grid.innerHTML = d.mosques.map(m => `
+            <div class="card">
+                <div class="card-crescent">☪</div>
+                <div class="mosque-name">${m.name}</div>
+                ${PRAYERS.map(p => `
+                    <div class="prayer-row">
+                        <span class="p-name">${PRAYER_LABELS[p]}</span>
+                        <span class="p-time">${to12(m.times[p])}</span>
+                    </div>`).join('')}
+            </div>`).join('');
+    }
 
-        // Render notification bar
-        function renderNotification(notification) {
-            const bar = document.getElementById('notificationBar');
-            if (notification) {
-                bar.textContent = notification;
-                bar.classList.add('active');
-            } else {
-                bar.classList.remove('active');
-            }
-        }
+    function tickClock() {
+        const now = new Date();
+        document.getElementById('clock').textContent =
+            now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) +
+            '  •  ' +
+            now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    }
 
-        // Listen for storage changes from other tabs (admin panel)
-        window.addEventListener('storage', function(e) {
-            if (e.key === 'mosqueAppData') {
-                const appData = loadData();
-                renderMosques(appData.mosques);
-                renderNotification(appData.notification);
-            }
-        });
+    render();
+    tickClock();
+    setInterval(tickClock, 1000);
+    setInterval(render, 20000);
 
-        // Auto-refresh every 30 seconds to catch localStorage updates
-        setInterval(function() {
-            const appData = loadData();
-            renderMosques(appData.mosques);
-            renderNotification(appData.notification);
-        }, 30000);
-
-        // Initialize on page load
-        init();
-    </script>
+    window.addEventListener('storage', e => { if (e.key === 'mosqueApp') render(); });
+</script>
 </body>
 </html>

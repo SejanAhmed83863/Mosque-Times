@@ -121,6 +121,8 @@
         /* Footer */
         footer { text-align: center; padding: 30px; color: rgba(255,255,255,0.7); font-size: 0.9rem; }
 
+        .loading { text-align: center; padding: 40px; color: #fff; font-size: 1.2rem; }
+
         @media(max-width:600px){
             .header-arabic { font-size: 2.1rem; }
             .grid { grid-template-columns: 1fr; }
@@ -138,73 +140,104 @@
     </header>
 
     <main class="main">
-        <div class="grid" id="grid"></div>
+        <div class="grid" id="grid">
+            <div class="loading">Loading prayer times...</div>
+        </div>
     </main>
 
     <footer>May Allah accept our prayers &nbsp;•&nbsp; جزاک اللہ خیرا</footer>
 </div>
 
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js"></script>
+
 <script>
-    const PRAYERS = ['fajr','zuhr','asr','maghrib','isha'];
-    const PRAYER_LABELS = { fajr:'Fajr', zuhr:'Zuhr', asr:'Asr', maghrib:'Maghrib', isha:'Isha' };
+const firebaseConfig = {
+  apiKey: "AIzaSyBgMroBilivfk7bJxoz93HjxSt6yU7Ura0",
+  authDomain: "tournament-app-4a050.firebaseapp.com",
+  databaseURL: "https://tournament-app-4a050-default-rtdb.firebaseio.com",
+  projectId: "tournament-app-4a050",
+  storageBucket: "tournament-app-4a050.appspot.com",
+  messagingSenderId: "811957533858",
+  appId: "1:811957533858:web:bab2735c363186aaccebfb",
+  measurementId: "G-YCWRRTJDB0"
+};
 
-    function loadData() {
-        const s = localStorage.getItem('mosqueApp');
-        if (s) return JSON.parse(s);
-        return {
-            admin: { email:'admin@mosque.com', password:'admin123' },
-            subadmins: [],
-            mosques: [
-                { id:1, name:'Central Masjid',  times:{ fajr:'05:30', zuhr:'13:00', asr:'16:30', maghrib:'18:45', isha:'20:15' } },
-                { id:2, name:'Al-Noor Masjid',  times:{ fajr:'05:35', zuhr:'13:05', asr:'16:35', maghrib:'18:50', isha:'20:20' } }
-            ],
-            notification: ''
-        };
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+const PRAYERS = ['fajr','zuhr','asr','maghrib','isha'];
+const PRAYER_LABELS = { fajr:'Fajr', zuhr:'Zuhr', asr:'Asr', maghrib:'Maghrib', isha:'Isha' };
+
+function to12(t24) {
+    if (!t24) return '--:-- --';
+    const [hStr, mStr] = t24.split(':');
+    let h = parseInt(hStr), m = mStr;
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    return `${h}:${m} ${ampm}`;
+}
+
+function render(mosques, notification) {
+    // Notification
+    const nb = document.getElementById('notifBar');
+    if (notification) { 
+        nb.textContent = notification; 
+        nb.classList.add('on'); 
+    } else { 
+        nb.classList.remove('on'); 
+    }
+    
+    // Mosques
+    const grid = document.getElementById('grid');
+    if (!mosques || mosques.length === 0) {
+        grid.innerHTML = '<div class="loading">No mosques found. Admin, please add mosques.</div>';
+        return;
     }
 
-    function to12(t24) {
-        if (!t24) return '--:-- --';
-        const [hStr, mStr] = t24.split(':');
-        let h = parseInt(hStr), m = mStr;
-        const ampm = h >= 12 ? 'PM' : 'AM';
-        h = h % 12 || 12;
-        return `${h}:${m} ${ampm}`;
-    }
+    grid.innerHTML = mosques.map(m => `
+        <div class="card">
+            <div class="card-crescent">☪</div>
+            <div class="mosque-name">${m.name}</div>
+            ${PRAYERS.map(p => `
+                <div class="prayer-row">
+                    <span class="p-name">${PRAYER_LABELS[p]}</span>
+                    <span class="p-time">${to12(m.times[p])}</span>
+                </div>`).join('')}
+        </div>`).join('');
+}
 
-    function render() {
-        const d = loadData();
-        // Notification
-        const nb = document.getElementById('notifBar');
-        if (d.notification) { nb.textContent = d.notification; nb.classList.add('on'); }
-        else { nb.classList.remove('on'); }
-        // Mosques
-        const grid = document.getElementById('grid');
-        grid.innerHTML = d.mosques.map(m => `
-            <div class="card">
-                <div class="card-crescent">☪</div>
-                <div class="mosque-name">${m.name}</div>
-                ${PRAYERS.map(p => `
-                    <div class="prayer-row">
-                        <span class="p-name">${PRAYER_LABELS[p]}</span>
-                        <span class="p-time">${to12(m.times[p])}</span>
-                    </div>`).join('')}
-            </div>`).join('');
-    }
+function tickClock() {
+    const now = new Date();
+    document.getElementById('clock').textContent =
+        now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) +
+        '  •  ' +
+        now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
 
-    function tickClock() {
-        const now = new Date();
-        document.getElementById('clock').textContent =
-            now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) +
-            '  •  ' +
-            now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-    }
-
-    render();
+// Real-time listeners
+function init() {
     tickClock();
     setInterval(tickClock, 1000);
-    setInterval(render, 20000);
 
-    window.addEventListener('storage', e => { if (e.key === 'mosqueApp') render(); });
+    // Listen to mosques
+    db.collection('mosques').onSnapshot(snapshot => {
+        const mosques = [];
+        snapshot.forEach(doc => {
+            mosques.push(doc.data());
+        });
+        mosques.sort((a, b) => a.id - b.id);
+
+        // Listen to notification
+        db.collection('notification').doc('current').onSnapshot(doc => {
+            const notification = doc.exists ? (doc.data().message || '') : '';
+            render(mosques, notification);
+        });
+    });
+}
+
+init();
 </script>
 </body>
 </html>

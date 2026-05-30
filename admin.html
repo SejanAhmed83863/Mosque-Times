@@ -114,6 +114,7 @@
 
     <div class="tabs">
         <button class="tab on" onclick="openTab('mosques',this)">🕌 Mosques</button>
+        <button class="tab"    onclick="openTab('subadmins',this)">👤 Sub-Admins</button>
         <button class="tab"    onclick="openTab('notif',this)">📢 Emergency Notice</button>
     </div>
 
@@ -130,6 +131,24 @@
         </div>
 
         <div id="mosqueList" style="margin-top:20px"></div>
+    </div>
+
+    <div class="tc" id="tc-subadmins">
+        <button class="btn btn-gold" onclick="toggleBox('addSABox')">+ Add Sub-Admin</button>
+
+        <div class="add-box" id="addSABox">
+            <h3>Add New Sub-Admin</h3>
+            <div class="row2">
+                <div class="fg"><label>Email</label><input class="fi" id="saEmail" type="email" placeholder="subadmin@example.com"></div>
+                <div class="fg"><label>Password</label><input class="fi" id="saPass" type="password" placeholder="Password"></div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:4px">
+                <button type="button" class="btn btn-gray" onclick="toggleBox('addSABox')">Cancel</button>
+                <button type="button" class="btn btn-green" onclick="addSubadmin()">Add Sub-Admin</button>
+            </div>
+        </div>
+
+        <div id="saList" style="margin-top:20px"></div>
     </div>
 
     <div class="tc" id="tc-notif">
@@ -248,6 +267,7 @@ function saveTime(mosqueId, prayer){
 
 function loadAdminData(){
     renderMosques();
+    renderSAList();
     
     db.collection('notification').doc('current').onSnapshot(doc => {
         if(doc.exists) {
@@ -360,6 +380,64 @@ function clearNotif(){
     }).catch(e => {
         console.error('Error:', e);
         showToast('❌ Error clearing notification');
+    });
+}
+
+/* SUB-ADMINS */
+function addSubadmin(){
+    const email = document.getElementById('saEmail').value.trim();
+    const pass  = document.getElementById('saPass').value.trim();
+
+    if(!email||!pass){ alert('Fill in email and password.'); return; }
+
+    db.collection('subadmins').add({
+        email: email,
+        password: pass
+    }).then(() => {
+        document.getElementById('saEmail').value='';
+        document.getElementById('saPass').value='';
+        toggleBox('addSABox');
+        renderSAList();
+        showToast('✅ Sub-admin added!');
+    }).catch(e => {
+        console.error('Error adding sub-admin:', e);
+        showToast('❌ Error: ' + e.message);
+    });
+}
+
+function deleteSA(docId){
+    if(!confirm('Delete this sub-admin?')) return;
+    db.collection('subadmins').doc(docId).delete().then(() => {
+        renderSAList();
+        showToast('🗑 Sub-admin deleted.');
+    }).catch(e => {
+        console.error('Error:', e);
+        showToast('❌ Error deleting sub-admin');
+    });
+}
+
+function renderSAList(){
+    db.collection('subadmins').onSnapshot(snapshot => {
+        const el = document.getElementById('saList');
+        if(snapshot.empty){ 
+            el.innerHTML='<p style="color:#999;padding:16px">No sub-admins yet.</p>'; 
+            return; 
+        }
+        let html = '';
+        snapshot.forEach(doc => {
+            const sa = doc.data();
+            html += `<div class="sa-item">
+                <div class="sa-info">
+                    <strong>${sa.email}</strong>
+                    <span>Password: ${sa.password}</span>
+                </div>
+                <button type="button" class="btn btn-red btn-sm" onclick="deleteSA('${doc.id}')">Delete</button>
+            </div>`;
+        });
+        el.innerHTML = html;
+    }, error => {
+        console.error('Error loading sub-admins:', error);
+        document.getElementById('saList').innerHTML = '<p style="color:red">Error: ' + error.message + '</p>';
     });
 }
 </script>

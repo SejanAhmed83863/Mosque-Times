@@ -3,139 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Masjid Prayer Times - جماعت کے اوقات</title>
+    <title>Admin Panel – Mosque Prayer Times</title>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --gold: #D4AF37;
-            --green: #1B5E20;
-            --teal: #004D40;
-            --cream: #FAF3E0;
-            --red: #C62828;
-            --shadow: rgba(0,0,0,0.3);
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --gold:#D4AF37; --green:#1B5E20; --teal:#004D40;
+            --red:#C62828;  --shadow:rgba(0,0,0,0.25);
         }
-        body {
-            font-family: 'Tajawal', sans-serif;
-            background: linear-gradient(135deg, var(--teal) 0%, var(--green) 100%);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-        body::before {
-            content: '';
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0.04;
-            background-image:
-                repeating-linear-gradient(60deg, transparent, transparent 40px, var(--gold) 40px, var(--gold) 41px),
-                repeating-linear-gradient(-60deg, transparent, transparent 40px, var(--gold) 40px, var(--gold) 41px),
-                repeating-linear-gradient(0deg, transparent, transparent 40px, var(--gold) 40px, var(--gold) 41px);
-            pointer-events: none; z-index: 0;
-        }
-        .app { position: relative; z-index: 1; }
+        body{font-family:'Tajawal',sans-serif;background:linear-gradient(135deg,var(--teal),var(--green));min-height:100vh;padding:30px 20px}
 
-        .notif-bar {
-            background: linear-gradient(90deg, var(--red), #B71C1C);
-            color: #fff; padding: 14px 20px; text-align: center;
-            font-size: 1rem; font-weight: 600;
-            display: none; animation: slideDown 0.5s ease;
-        }
-        .notif-bar.on { display: block; }
-        @keyframes slideDown {
-            from { transform: translateY(-100%); opacity: 0; }
-            to   { transform: translateY(0);    opacity: 1; }
-        }
+        .login-wrap{max-width:440px;margin:80px auto;background:#fff;border-radius:20px;padding:40px;box-shadow:0 20px 60px var(--shadow)}
+        .login-wrap h1{font-family:'Amiri',serif;font-size:2.4rem;color:var(--green);text-align:center;margin-bottom:6px}
+        .login-wrap p{text-align:center;color:#777;margin-bottom:28px}
+        .err{color:var(--red);font-size:.9rem;margin-top:6px;display:none}
+        .err.on{display:block}
 
-        .header {
-            background: linear-gradient(135deg, rgba(0,77,64,0.97), rgba(27,94,32,0.97));
-            padding: 35px 20px 30px;
-            text-align: center;
-            border-bottom: 3px solid var(--gold);
-            box-shadow: 0 6px 30px var(--shadow);
-        }
-        .header-arabic {
-            font-family: 'Amiri', serif;
-            font-size: 3.2rem; color: var(--gold);
-            text-shadow: 1px 2px 8px rgba(0,0,0,0.4);
-            letter-spacing: 3px; margin-bottom: 8px;
-        }
-        .header-english {
-            font-size: 1.4rem; color: var(--cream);
-            font-weight: 300; opacity: 0.92;
-        }
-        .live-clock {
-            margin-top: 14px;
-            font-size: 1.15rem; color: #fff;
-            font-weight: 500; opacity: 0.85;
-        }
+        .panel{max-width:1200px;margin:0 auto;background:#fff;border-radius:20px;padding:40px;box-shadow:0 20px 60px var(--shadow);display:none}
+        .panel.on{display:block}
 
-        .main { max-width: 1400px; margin: 45px auto; padding: 0 25px; }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 30px; margin-bottom: 50px;
-        }
+        .ph{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid var(--gold);padding-bottom:18px;margin-bottom:28px;flex-wrap:wrap;gap:12px}
+        .ph h1{font-family:'Amiri',serif;font-size:2.4rem;color:var(--green)}
 
-        .card {
-            background: rgba(255,255,255,0.97);
-            border-radius: 22px; padding: 30px 28px;
-            box-shadow: 0 12px 40px var(--shadow);
-            position: relative; overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .card:hover { transform: translateY(-6px); box-shadow: 0 18px 55px var(--shadow); }
-        .card::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
-            background: linear-gradient(90deg, var(--gold), var(--green), var(--gold));
-        }
-        .card-crescent {
-            position: absolute; top: 16px; right: 18px;
-            font-size: 3.5rem; color: var(--gold); opacity: 0.09;
-        }
-        .mosque-name {
-            font-family: 'Amiri', serif;
-            font-size: 1.75rem; color: var(--green);
-            font-weight: 700; margin-bottom: 22px;
-        }
+        .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:28px;border-bottom:2px solid #eee}
+        .tab{padding:11px 22px;background:none;border:none;border-bottom:3px solid transparent;font-size:1rem;font-weight:600;color:#777;cursor:pointer;transition:.25s;margin-bottom:-2px}
+        .tab.on{color:var(--green);border-bottom-color:var(--gold)}
 
-        .prayer-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 11px 14px;
-            background: linear-gradient(90deg, rgba(27,94,32,0.06), transparent);
-            border-left: 4px solid var(--gold);
-            border-radius: 8px; margin-bottom: 10px;
-            transition: all 0.25s;
-        }
-        .prayer-row:last-child { margin-bottom: 0; }
-        .prayer-row:hover { background: linear-gradient(90deg, rgba(27,94,32,0.13), transparent); transform: translateX(4px); }
-        .p-name { font-weight: 700; color: #222; font-size: 1.05rem; }
-        .p-time { font-family: 'Amiri', serif; font-size: 1.3rem; color: var(--green); font-weight: 700; }
+        .tc{display:none}.tc.on{display:block}
 
-        footer { text-align: center; padding: 30px; color: rgba(255,255,255,0.7); font-size: 0.9rem; }
-        .loading { text-align: center; padding: 40px; color: #fff; font-size: 1.2rem; }
+        .fg{margin-bottom:18px}
+        .fg label{display:block;margin-bottom:7px;font-weight:600;color:#333}
+        .fi{width:100%;padding:11px 14px;border:2px solid #ddd;border-radius:10px;font-size:1rem;font-family:'Tajawal',sans-serif;transition:.25s}
+        .fi:focus{outline:none;border-color:var(--gold)}
+        textarea.fi{resize:vertical}
 
+        .btn{padding:11px 22px;border:none;border-radius:9px;font-weight:700;font-size:.95rem;cursor:pointer;transition:.25s}
+        .btn:hover{transform:translateY(-2px)}
+        .btn-green{background:linear-gradient(135deg,var(--green),var(--teal));color:#fff}
+        .btn-gold{background:linear-gradient(135deg,var(--gold),#b8972e);color:#222}
+        .btn-red{background:var(--red);color:#fff}
+        .btn-gray{background:#9E9E9E;color:#fff}
+        .btn-sm{padding:7px 14px;font-size:.85rem}
+        .btn-w{width:100%}
+
+        .add-box{display:none;background:#f8f8f8;border:2px solid var(--gold);border-radius:12px;padding:24px;margin:16px 0}
+        .add-box.on{display:block}
+        .add-box h3{color:var(--green);margin-bottom:16px}
+
+        .toast{padding:14px 18px;background:#388E3C;color:#fff;border-radius:9px;margin-bottom:22px;display:none;animation:fadeIn .3s}
+        .toast.on{display:block}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+
+        .mosque-item{background:#f5f5f5;border-left:5px solid var(--gold);border-radius:10px;padding:22px;margin-bottom:18px}
+        .mi-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+        .mi-name-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+        .mi-name{font-size:1.35rem;font-weight:700;color:var(--green)}
+        .mi-name-input{font-size:1.1rem;padding:7px 11px;border:2px solid var(--gold);border-radius:8px;font-family:'Tajawal',sans-serif;display:none}
+        .mi-name-input.on{display:inline-block}
+        .mi-name.hidden{display:none}
+
+        .time-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px}
+        .tg{display:flex;flex-direction:column}
+        .tg label{font-size:.85rem;font-weight:600;color:#666;margin-bottom:5px}
+        .time-sel-wrap{display:flex;gap:5px;align-items:center}
+        .time-sel{padding:8px 6px;border:2px solid #ddd;border-radius:7px;font-size:.95rem;font-family:'Tajawal',sans-serif;cursor:pointer;background:#fff;transition:.2s}
+        .time-sel:focus{outline:none;border-color:var(--gold)}
+        .ampm-sel{padding:8px 5px;border:2px solid #ddd;border-radius:7px;font-size:.9rem;cursor:pointer;background:#fff;transition:.2s}
+        .ampm-sel:focus{outline:none;border-color:var(--gold)}
+
+        .sa-item{background:#f5f5f5;border-left:5px solid var(--gold);border-radius:10px;padding:18px 22px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px}
+        .sa-info strong{display:block;font-size:1.1rem;color:var(--green)}
+        .sa-info span{font-size:.88rem;color:#666}
+
+        .logout{padding:10px 22px;background:var(--red);color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;transition:.25s}
+        .logout:hover{transform:scale(1.04)}
+
+        .mosque-checks{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-top:6px}
+        .check-label{display:flex;align-items:center;gap:7px;font-size:.95rem;cursor:pointer;padding:7px 10px;background:#fff;border:1px solid #ddd;border-radius:7px;transition:.2s}
+        .check-label:hover{border-color:var(--gold)}
+        .check-label input{width:16px;height:16px;accent-color:var(--green);cursor:pointer}
+
+        .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
         @media(max-width:600px){
-            .header-arabic { font-size: 2.1rem; }
-            .grid { grid-template-columns: 1fr; }
+            .row2{grid-template-columns:1fr}
+            .ph{flex-direction:column;text-align:center}
+            .mi-head{flex-direction:column;align-items:flex-start}
         }
     </style>
 </head>
 <body>
-<div class="app">
-    <div class="notif-bar" id="notifBar"></div>
 
-    <header class="header">
-        <div class="header-arabic">مسجد جماعت کے اوقات</div>
-        <div class="header-english">Mosque Jamaat Prayer Times</div>
-        <div class="live-clock" id="clock"></div>
-    </header>
+<div class="login-wrap" id="loginWrap">
+    <h1>Admin Panel</h1>
+    <p>Mosque Prayer Times Management</p>
+    <form onsubmit="doLogin(event)">
+        <div class="fg"><label>Email</label><input class="fi" id="le" type="email" required></div>
+        <div class="fg"><label>Password</label><input class="fi" id="lp" type="password" required></div>
+        <div class="err" id="lerr">❌ Invalid email or password.</div>
+        <button class="btn btn-green btn-w" style="margin-top:6px">Login</button>
+    </form>
+</div>
 
-    <main class="main">
-        <div class="grid" id="grid">
-            <div class="loading">Loading prayer times...</div>
+<div class="panel" id="panel">
+    <div class="ph">
+        <h1>⚙️ Admin Dashboard</h1>
+        <button class="logout" onclick="doLogout()">Logout</button>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <div class="tabs">
+        <button class="tab on" onclick="openTab('mosques',this)">🕌 Mosques</button>
+        <button class="tab"    onclick="openTab('notif',this)">📢 Emergency Notice</button>
+    </div>
+
+    <div class="tc on" id="tc-mosques">
+        <button class="btn btn-gold" onclick="toggleBox('addMosqueBox')">+ Add New Mosque</button>
+
+        <div class="add-box" id="addMosqueBox">
+            <h3>Add New Mosque</h3>
+            <div class="fg"><label>Mosque Name</label><input class="fi" id="newMosqueName" placeholder="e.g. Al-Farooq Masjid"></div>
+            <div style="display:flex;gap:10px;margin-top:4px">
+                <button type="button" class="btn btn-gray" onclick="toggleBox('addMosqueBox')">Cancel</button>
+                <button type="button" class="btn btn-green" onclick="addMosque()">Add Mosque</button>
+            </div>
         </div>
-    </main>
 
-    <footer>May Allah accept our prayers &nbsp;•&nbsp; جزاک اللہ خیرا</footer>
+        <div id="mosqueList" style="margin-top:20px"></div>
+    </div>
+
+    <div class="tc" id="tc-notif">
+        <div class="fg">
+            <label>Emergency Notification Message</label>
+            <textarea class="fi" id="notifMsg" rows="4" placeholder="Type your emergency message here…"></textarea>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:6px">
+            <button type="button" class="btn btn-red" onclick="clearNotif()">Clear Notification</button>
+            <button type="button" class="btn btn-green" onclick="saveNotif()">Publish Notification</button>
+        </div>
+    </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js"></script>
@@ -156,73 +162,206 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 const PRAYERS = ['fajr','zuhr','asr','maghrib','isha'];
-const PRAYER_LABELS = { fajr:'Fajr', zuhr:'Zuhr', asr:'Asr', maghrib:'Maghrib', isha:'Isha' };
+const PLABELS  = { fajr:'Fajr', zuhr:'Zuhr', asr:'Asr', maghrib:'Maghrib', isha:'Isha' };
 
-function to12(t24) {
-    if (!t24) return '--:-- --';
-    const [hStr, mStr] = t24.split(':');
-    let h = parseInt(hStr), m = mStr;
-    const ampm = h >= 12 ? 'PM' : 'AM';
-    h = h % 12 || 12;
-    return `${h}:${m} ${ampm}`;
+function showToast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('on');
+    setTimeout(()=> t.classList.remove('on'), 3000);
 }
 
-function render(mosques, notification) {
-    const nb = document.getElementById('notifBar');
-    if (notification) { 
-        nb.textContent = notification; 
-        nb.classList.add('on'); 
-    } else { 
-        nb.classList.remove('on'); 
-    }
+function toggleBox(id){
+    const el = document.getElementById(id);
+    el.classList.toggle('on');
+}
+
+function openTab(name, btn){
+    document.querySelectorAll('.tc').forEach(x => x.classList.remove('on'));
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('on'));
+    document.getElementById('tc-'+name).classList.add('on');
+    btn.classList.add('on');
+}
+
+function doLogin(e){
+    e.preventDefault();
+    const email = document.getElementById('le').value;
+    const pass = document.getElementById('lp').value;
     
-    const grid = document.getElementById('grid');
-    if (!mosques || mosques.length === 0) {
-        grid.innerHTML = '<div class="loading">No mosques found. Admin, please add mosques.</div>';
-        return;
+    if(email === 'admin@mosque.com' && pass === 'admin123'){
+        document.getElementById('loginWrap').style.display = 'none';
+        document.getElementById('panel').classList.add('on');
+        document.getElementById('lerr').classList.remove('on');
+        loadAdminData();
+    } else {
+        document.getElementById('lerr').classList.add('on');
     }
-
-    grid.innerHTML = mosques.map(m => `
-        <div class="card">
-            <div class="card-crescent">☪</div>
-            <div class="mosque-name">${m.name}</div>
-            ${PRAYERS.map(p => `
-                <div class="prayer-row">
-                    <span class="p-name">${PRAYER_LABELS[p]}</span>
-                    <span class="p-time">${to12(m.times[p])}</span>
-                </div>`).join('')}
-        </div>`).join('');
 }
 
-function tickClock() {
-    const now = new Date();
-    document.getElementById('clock').textContent =
-        now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) +
-        '  •  ' +
-        now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+function doLogout(){
+    document.getElementById('loginWrap').style.display = '';
+    document.getElementById('panel').classList.remove('on');
+    document.getElementById('le').value = '';
+    document.getElementById('lp').value = '';
 }
 
-function init() {
-    tickClock();
-    setInterval(tickClock, 1000);
+function to24(h, m, ap){
+    let hour = parseInt(h);
+    if(ap==='PM' && hour!==12) hour += 12;
+    if(ap==='AM' && hour===12) hour = 0;
+    return `${String(hour).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+}
 
-    db.collection('mosques').orderBy('id').onSnapshot(snapshot => {
-        const mosques = [];
-        snapshot.forEach(doc => {
-            mosques.push(doc.data());
-        });
+function makeTimeSels(mosqueId, prayer, val24){
+    const [hh, mm] = val24 ? val24.split(':') : ['05','00'];
+    let h = parseInt(hh); const ap = h>=12?'PM':'AM'; h = h%12||12;
+    const hOpts = Array.from({length:12},(_,i)=>i+1).map(n=>`<option ${n===h?'selected':''}>${n}</option>`).join('');
+    const mOpts = Array.from({length:60},(_,i)=>String(i).padStart(2,'0')).map(n=>`<option ${n===String(parseInt(mm)).padStart(2,'0')?'selected':''}>${n}</option>`).join('');
+    const apOpts = ['AM','PM'].map(x=>`<option ${x===ap?'selected':''}>${x}</option>`).join('');
+    const pid = `${mosqueId}_${prayer}`;
+    return `<div class="tg">
+        <label>${PLABELS[prayer]}</label>
+        <div class="time-sel-wrap">
+            <select class="time-sel" id="H_${pid}" onchange="saveTime(${mosqueId},'${prayer}')">${hOpts}</select>
+            :
+            <select class="time-sel" id="M_${pid}" onchange="saveTime(${mosqueId},'${prayer}')">${mOpts}</select>
+            <select class="ampm-sel" id="AP_${pid}" onchange="saveTime(${mosqueId},'${prayer}')">${apOpts}</select>
+        </div>
+    </div>`;
+}
 
-        db.collection('notification').doc('current').onSnapshot(doc => {
-            const notification = doc.exists ? (doc.data().message || '') : '';
-            render(mosques, notification);
-        });
-    }, error => {
-        console.log("Firestore error:", error);
-        document.getElementById('grid').innerHTML = '<div class="loading">Error loading data. Check console.</div>';
+function saveTime(mosqueId, prayer){
+    const pid = `${mosqueId}_${prayer}`;
+    const h  = document.getElementById(`H_${pid}`).value;
+    const m  = document.getElementById(`M_${pid}`).value;
+    const ap = document.getElementById(`AP_${pid}`).value;
+    const newTime = to24(h,m,ap);
+    
+    db.collection('mosques').doc(String(mosqueId)).update({
+        [`times.${prayer}`]: newTime
+    }).then(() => {
+        showToast(`✅ ${PLABELS[prayer]} time updated!`);
+    }).catch(e => {
+        console.error('Error updating time:', e);
+        showToast('❌ Error updating time');
     });
 }
 
-init();
+function loadAdminData(){
+    renderMosques();
+    
+    db.collection('notification').doc('current').onSnapshot(doc => {
+        if(doc.exists) {
+            document.getElementById('notifMsg').value = doc.data().message || '';
+        }
+    });
+}
+
+function renderMosques(){
+    db.collection('mosques').orderBy('id').onSnapshot(snapshot => {
+        const el = document.getElementById('mosqueList');
+        if(snapshot.empty){ 
+            el.innerHTML='<p style="color:#999;padding:20px">No mosques added yet. Click "Add New Mosque" button above.</p>'; 
+            return; 
+        }
+        let html = '';
+        snapshot.forEach(doc => {
+            const m = doc.data();
+            html += `
+                <div class="mosque-item" id="mi_${m.id}">
+                    <div class="mi-head">
+                        <div class="mi-name-row">
+                            <span class="mi-name" id="mn_${m.id}">${m.name}</span>
+                            <input class="mi-name-input fi" id="mni_${m.id}" value="${m.name}" onkeydown="if(event.key==='Enter')saveMosqueName(${m.id})">
+                            <button type="button" class="btn btn-gold btn-sm" id="editBtn_${m.id}" onclick="toggleEditName(${m.id})">✏️ Edit Name</button>
+                            <button type="button" class="btn btn-green btn-sm" id="saveBtn_${m.id}" style="display:none" onclick="saveMosqueName(${m.id})">💾 Save</button>
+                        </div>
+                        <button type="button" class="btn btn-red btn-sm" onclick="deleteMosque(${m.id})">🗑 Delete</button>
+                    </div>
+                    <div class="time-grid">
+                        ${PRAYERS.map(p=>`${makeTimeSels(m.id, p, m.times[p])}`).join('')}
+                    </div>
+                </div>`;
+        });
+        el.innerHTML = html;
+    }, error => {
+        console.error('Error loading mosques:', error);
+        document.getElementById('mosqueList').innerHTML = '<p style="color:red">Error loading mosques: ' + error.message + '</p>';
+    });
+}
+
+function toggleEditName(id){
+    const nameEl  = document.getElementById(`mn_${id}`);
+    const inputEl = document.getElementById(`mni_${id}`);
+    const editBtn = document.getElementById(`editBtn_${id}`);
+    const saveBtn = document.getElementById(`saveBtn_${id}`);
+    const editing = inputEl.classList.contains('on');
+    if(editing){
+        nameEl.classList.remove('hidden'); inputEl.classList.remove('on');
+        editBtn.style.display=''; saveBtn.style.display='none';
+    } else {
+        inputEl.value = nameEl.textContent;
+        nameEl.classList.add('hidden'); inputEl.classList.add('on');
+        editBtn.style.display='none'; saveBtn.style.display='';
+        inputEl.focus();
+    }
+}
+
+function saveMosqueName(id){
+    const val = document.getElementById(`mni_${id}`).value.trim();
+    if(!val){ alert('Mosque name cannot be empty.'); return; }
+    db.collection('mosques').doc(String(id)).update({name:val}).then(() => {
+        showToast('✅ Mosque name updated!');
+    }).catch(e=>console.error('Error:', e));
+}
+
+function addMosque(){
+    const name = document.getElementById('newMosqueName').value.trim();
+    if(!name){ alert('Please enter a mosque name.'); return; }
+    
+    const id = Date.now();
+    db.collection('mosques').doc(String(id)).set({
+        id: id,
+        name: name,
+        times: { fajr:'05:00', zuhr:'12:30', asr:'15:45', maghrib:'18:00', isha:'19:30' }
+    }).then(() => {
+        document.getElementById('newMosqueName').value='';
+        toggleBox('addMosqueBox');
+        showToast('✅ Mosque added!');
+    }).catch(e => {
+        console.error('Error adding mosque:', e);
+        showToast('❌ Error adding mosque: ' + e.message);
+    });
+}
+
+function deleteMosque(id){
+    if(!confirm('Delete this mosque?')) return;
+    db.collection('mosques').doc(String(id)).delete().then(() => {
+        showToast('🗑 Mosque deleted.');
+    }).catch(e => {
+        console.error('Error:', e);
+        showToast('❌ Error deleting mosque');
+    });
+}
+
+function saveNotif(){
+    const msg = document.getElementById('notifMsg').value.trim();
+    db.collection('notification').doc('current').set({message:msg}).then(() => {
+        showToast('📢 Notification published!');
+    }).catch(e => {
+        console.error('Error:', e);
+        showToast('❌ Error: ' + e.message);
+    });
+}
+
+function clearNotif(){
+    db.collection('notification').doc('current').set({message:''}).then(() => {
+        document.getElementById('notifMsg').value='';
+        showToast('🗑 Notification cleared.');
+    }).catch(e => {
+        console.error('Error:', e);
+        showToast('❌ Error clearing notification');
+    });
+}
 </script>
 </body>
 </html>

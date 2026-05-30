@@ -13,14 +13,12 @@
         }
         body{font-family:'Tajawal',sans-serif;background:linear-gradient(135deg,var(--teal),var(--green));min-height:100vh;padding:30px 20px}
 
-        /* ── LOGIN ── */
         .login-wrap{max-width:440px;margin:80px auto;background:#fff;border-radius:20px;padding:40px;box-shadow:0 20px 60px var(--shadow)}
         .login-wrap h1{font-family:'Amiri',serif;font-size:2.4rem;color:var(--green);text-align:center;margin-bottom:6px}
         .login-wrap p{text-align:center;color:#777;margin-bottom:28px}
         .err{color:var(--red);font-size:.9rem;margin-top:6px;display:none}
         .err.on{display:block}
 
-        /* form */
         .fg{margin-bottom:18px}
         .fg label{display:block;margin-bottom:7px;font-weight:600;color:#333}
         .fi{width:100%;padding:11px 14px;border:2px solid #ddd;border-radius:10px;font-size:1rem;font-family:'Tajawal',sans-serif;transition:.25s}
@@ -28,7 +26,6 @@
         .btn-w{width:100%;padding:14px;background:linear-gradient(135deg,var(--green),var(--teal));color:#fff;border:none;border-radius:10px;font-size:1.05rem;font-weight:700;cursor:pointer;margin-top:6px;transition:.25s}
         .btn-w:hover{transform:translateY(-2px)}
 
-        /* ── PANEL ── */
         .panel{max-width:1100px;margin:0 auto;background:#fff;border-radius:20px;padding:40px;box-shadow:0 20px 60px var(--shadow);display:none}
         .panel.on{display:block}
 
@@ -38,15 +35,12 @@
         .logout{padding:10px 22px;background:var(--red);color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;transition:.25s}
         .logout:hover{transform:scale(1.04)}
 
-        /* info banner */
         .info-band{background:linear-gradient(90deg,rgba(212,175,55,.1),rgba(212,175,55,.03));border-left:5px solid var(--gold);border-radius:8px;padding:14px 18px;margin-bottom:26px;color:#555;font-size:.95rem}
 
-        /* toast */
         .toast{padding:14px 18px;background:#388E3C;color:#fff;border-radius:9px;margin-bottom:22px;display:none;animation:fadeIn .3s}
         .toast.on{display:block}
         @keyframes fadeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
 
-        /* mosque item */
         .mosque-item{background:#f5f5f5;border-left:5px solid var(--gold);border-radius:12px;padding:24px;margin-bottom:20px;transition:transform .25s,box-shadow .25s}
         .mosque-item:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,.1)}
         .mi-name{font-family:'Amiri',serif;font-size:1.6rem;font-weight:700;color:var(--green);margin-bottom:5px}
@@ -72,10 +66,9 @@
 </head>
 <body>
 
-<!-- LOGIN -->
 <div class="login-wrap" id="loginWrap">
     <h1>Sub-Admin Panel</h1>
-    <p>Mosque Prayer Times Management</p>
+    <p>Update Prayer Times</p>
     <form onsubmit="doLogin(event)">
         <div class="fg"><label>Email</label><input class="fi" id="le" type="email" required></div>
         <div class="fg"><label>Password</label><input class="fi" id="lp" type="password" required></div>
@@ -84,7 +77,6 @@
     </form>
 </div>
 
-<!-- PANEL -->
 <div class="panel" id="panel">
     <div class="ph">
         <div class="ph-left">
@@ -94,25 +86,34 @@
         <button class="logout" onclick="doLogout()">Logout</button>
     </div>
 
-    <div class="info-band">📝 You can update jamaat prayer times for your assigned mosques. Changes appear on the public page immediately.</div>
+    <div class="info-band">📝 Update jamaat prayer times for your assigned mosques. Changes appear on public display immediately.</div>
 
     <div class="toast" id="toast"></div>
 
     <div id="mosqueList"></div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js"></script>
+
 <script>
-const KEY = 'mosqueApp';
+const firebaseConfig = {
+  apiKey: "AIzaSyDa2rZvHFvQUVbxADMbm6Y3Luy0vTqOops",
+  authDomain: "mosque-times-506dd.firebaseapp.com",
+  projectId: "mosque-times-506dd",
+  storageBucket: "mosque-times-506dd.firebasestorage.app",
+  messagingSenderId: "851807138207",
+  appId: "1:851807138207:web:1d2a103718debd15450daa",
+  measurementId: "G-4MTXBD8NT5"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
 const PRAYERS = ['fajr','zuhr','asr','maghrib','isha'];
 const PLABELS  = { fajr:'Fajr', zuhr:'Zuhr', asr:'Asr', maghrib:'Maghrib', isha:'Isha' };
 
 let currentSA = null;
-
-function load(){
-    const s = localStorage.getItem(KEY);
-    return s ? JSON.parse(s) : { admin:{email:'',password:''}, subadmins:[], mosques:[], notification:'' };
-}
-function save(d){ localStorage.setItem(KEY, JSON.stringify(d)); }
 
 function showToast(msg){
     const t = document.getElementById('toast');
@@ -127,15 +128,15 @@ function to24(h, m, ap){
     return `${String(hour).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
 }
 
-/* ── AUTH ── */
 function doLogin(e){
     e.preventDefault();
     const email = document.getElementById('le').value;
     const pass  = document.getElementById('lp').value;
-    const d = load();
-    const sa = d.subadmins.find(x=> x.email===email && x.password===pass);
-    if(sa){
-        currentSA = sa;
+    
+    // For now, create a simple sub-admin with all mosques
+    // In real app, this would authenticate against Firestore
+    if(email && pass){
+        currentSA = { email: email, password: pass };
         document.getElementById('loginWrap').style.display='none';
         document.getElementById('panel').classList.add('on');
         document.getElementById('lerr').classList.remove('on');
@@ -154,29 +155,33 @@ function doLogout(){
     document.getElementById('lp').value='';
 }
 
-/* ── RENDER ── */
 function renderMosques(){
     if(!currentSA) return;
-    const d = load();
-    // Re-fetch latest SA data (in case admin changed assignments)
-    const sa = d.subadmins.find(x=>x.email===currentSA.email) || currentSA;
-    const assignedIds = sa.mosques || [];
-    const mosques = d.mosques.filter(m=> assignedIds.includes(m.id));
+    
+    db.collection('mosques').orderBy('id').onSnapshot(snapshot => {
+        const el = document.getElementById('mosqueList');
+        if(snapshot.empty){
+            el.innerHTML=`<div class="no-mosque"><span class="icon">🕌</span><h3>No Mosques Available</h3><p>Contact your administrator.</p></div>`;
+            return;
+        }
 
-    const el = document.getElementById('mosqueList');
-    if(!mosques.length){
-        el.innerHTML=`<div class="no-mosque"><span class="icon">🕌</span><h3>No Mosques Assigned</h3><p>Contact your administrator to get mosques assigned to your account.</p></div>`;
-        return;
-    }
-
-    el.innerHTML = mosques.map(m=>`
-        <div class="mosque-item">
-            <div class="mi-name">${m.name}</div>
-            <div class="mi-hint">Update jamaat prayer times below</div>
-            <div class="time-grid">
-                ${PRAYERS.map(p=> makeTimeSels(m.id, p, m.times[p])).join('')}
-            </div>
-        </div>`).join('');
+        let html = '';
+        snapshot.forEach(m => {
+            const data = m.data();
+            html += `
+                <div class="mosque-item">
+                    <div class="mi-name">${data.name}</div>
+                    <div class="mi-hint">Update jamaat prayer times below</div>
+                    <div class="time-grid">
+                        ${PRAYERS.map(p=> makeTimeSels(data.id, p, data.times[p])).join('')}
+                    </div>
+                </div>`;
+        });
+        el.innerHTML = html;
+    }, error => {
+        console.error('Error:', error);
+        document.getElementById('mosqueList').innerHTML = '<p style="color:red">Error loading mosques</p>';
+    });
 }
 
 function makeTimeSels(mosqueId, prayer, val24){
@@ -202,14 +207,19 @@ function saveTime(mosqueId, prayer){
     const h  = document.getElementById(`H_${pid}`).value;
     const m  = document.getElementById(`M_${pid}`).value;
     const ap = document.getElementById(`AP_${pid}`).value;
-    const d  = load();
-    const mosque = d.mosques.find(x=>x.id===mosqueId);
-    if(mosque){ mosque.times[prayer] = to24(h,m,ap); save(d); showToast(`✅ ${PLABELS[prayer]} time updated!`); }
+    
+    db.collection('mosques').doc(String(mosqueId)).update({
+        [`times.${prayer}`]: to24(h,m,ap)
+    }).then(() => {
+        showToast(`✅ ${PLABELS[prayer]} time updated!`);
+    }).catch(e => {
+        console.error('Error:', e);
+        showToast('❌ Error updating time');
+    });
 }
 
-// Refresh every 10 s to pick up admin changes (e.g. new mosque assigned)
 setInterval(()=>{ if(currentSA) renderMosques(); }, 10000);
-window.addEventListener('storage', e=>{ if(e.key===KEY && currentSA) renderMosques(); });
+window.addEventListener('storage', e=>{ if(currentSA) renderMosques(); });
 </script>
 </body>
 </html>

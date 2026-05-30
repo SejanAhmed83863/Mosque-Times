@@ -133,18 +133,25 @@ function doLogin(e){
     const email = document.getElementById('le').value;
     const pass  = document.getElementById('lp').value;
     
-    // For now, create a simple sub-admin with all mosques
-    // In real app, this would authenticate against Firestore
-    if(email && pass){
-        currentSA = { email: email, password: pass };
-        document.getElementById('loginWrap').style.display='none';
-        document.getElementById('panel').classList.add('on');
-        document.getElementById('lerr').classList.remove('on');
-        document.getElementById('userLabel').textContent = '👤 ' + email;
-        renderMosques();
-    } else {
-        document.getElementById('lerr').classList.add('on');
-    }
+    // Check Firestore for sub-admin
+    db.collection('subadmins').where('email', '==', email).where('password', '==', pass).get()
+        .then(snapshot => {
+            if(!snapshot.empty){
+                const doc = snapshot.docs[0];
+                currentSA = doc.data();
+                document.getElementById('loginWrap').style.display='none';
+                document.getElementById('panel').classList.add('on');
+                document.getElementById('lerr').classList.remove('on');
+                document.getElementById('userLabel').textContent = '👤 ' + email;
+                renderMosques();
+            } else {
+                document.getElementById('lerr').classList.add('on');
+            }
+        })
+        .catch(e => {
+            console.error('Login error:', e);
+            document.getElementById('lerr').classList.add('on');
+        });
 }
 
 function doLogout(){

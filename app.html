@@ -51,10 +51,6 @@
         .fg label{display:block;margin-bottom:7px;font-weight:600;color:#333;font-size:.92rem}
         .fi{width:100%;padding:11px 14px;border:2px solid #e0e0e0;border-radius:10px;font-size:1rem;font-family:'Tajawal',sans-serif;transition:.25s;outline:none}
         .fi:focus{border-color:var(--gold)}
-        .loc-row{display:flex;gap:8px}
-        .loc-row .fi{flex:1}
-        .btn-locate{padding:0 14px;border-radius:10px;border:2px solid var(--border,#e0e0e0);background:#fff;cursor:pointer;font-size:1.1rem;flex-shrink:0}
-        .btn-locate:hover{border-color:var(--gold)}
         .modal-actions{display:flex;gap:10px;margin-top:6px}
         .btn{padding:12px 22px;border:none;border-radius:9px;font-weight:700;font-size:.95rem;cursor:pointer;transition:.25s;font-family:'Tajawal',sans-serif;flex:1}
         .btn-green{background:linear-gradient(135deg,var(--green),var(--teal));color:#fff}
@@ -118,10 +114,7 @@
             </div>
             <div class="fg">
                 <label>Location</label>
-                <div class="loc-row">
-                    <input class="fi" id="rLocation" placeholder="Area / address">
-                    <button class="btn-locate" type="button" title="Use my current location" onclick="useMyLocation()">📍</button>
-                </div>
+                <input class="fi" id="rLocation" placeholder="Area / address">
             </div>
             <div class="fg">
                 <label>Gmail</label>
@@ -211,25 +204,6 @@
     el('rLocation').value='';
     el('rEmail').value='';
     el('rPassword').value='';
-  };
-
-  window.useMyLocation = function(){
-    if(!navigator.geolocation){
-      alert('Location is not supported on this browser. Please type it manually.');
-      return;
-    }
-    const locInput = el('rLocation');
-    const original = locInput.placeholder;
-    locInput.placeholder = 'Detecting location…';
-    navigator.geolocation.getCurrentPosition(function(pos){
-      const lat = pos.coords.latitude.toFixed(6);
-      const lng = pos.coords.longitude.toFixed(6);
-      locInput.value = `${lat}, ${lng}`;
-      locInput.placeholder = original;
-    }, function(){
-      locInput.placeholder = original;
-      alert('Could not detect your location. Please type it manually.');
-    });
   };
 
   window.submitRegistration = function(){

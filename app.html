@@ -182,16 +182,16 @@
   function setDlButton(kind, info) {
     const btn  = kind==='main' ? el('mainDlBtn') : el('subDlBtn');
     const meta = kind==='main' ? el('mainDlMeta') : el('subDlMeta');
-    if(info && info.url){
-      btn.href = info.url;
+    if(info && info.data){
+      btn.href = info.data;
+      btn.setAttribute('download', info.fileName || 'app.apk');
       btn.textContent = '⬇️ Download APK';
       btn.classList.remove('disabled');
-      btn.removeAttribute('target');
-      btn.setAttribute('download','');
       const sizeMb = info.size ? (info.size/1024/1024).toFixed(1)+' MB' : '';
       meta.textContent = sizeMb ? `${info.fileName||'app.apk'} • ${sizeMb}` : (info.fileName||'');
     } else {
       btn.href = '#';
+      btn.removeAttribute('download');
       btn.textContent = 'Coming Soon';
       btn.classList.add('disabled');
       meta.textContent = '';

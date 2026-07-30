@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Apps – Mosque Jamaat Prayer Times</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--gold:#D4AF37;--green:#1B5E20;--teal:#004D40;--red:#C62828;--shadow:rgba(0,0,0,0.3);--cream:#FAF3E0}
+        body{font-family:'Tajawal',sans-serif;background:linear-gradient(135deg,var(--teal),var(--green));min-height:100vh}
+        body::before{
+            content:'';position:fixed;top:0;left:0;width:100%;height:100%;
+            opacity:.04;pointer-events:none;z-index:0;
+            background-image:
+                repeating-linear-gradient(60deg,transparent,transparent 40px,var(--gold) 40px,var(--gold) 41px),
+                repeating-linear-gradient(-60deg,transparent,transparent 40px,var(--gold) 40px,var(--gold) 41px);
+        }
+        .app{position:relative;z-index:1}
+
+        .header{background:linear-gradient(135deg,rgba(0,77,64,.97),rgba(27,94,32,.97));padding:45px 20px 35px;text-align:center;border-bottom:3px solid var(--gold);box-shadow:0 6px 30px var(--shadow)}
+        .header-arabic{font-family:'Amiri',serif;font-size:2.6rem;color:var(--gold);text-shadow:1px 2px 8px rgba(0,0,0,.4);letter-spacing:2px;margin-bottom:8px}
+        .header-english{font-size:1.3rem;color:var(--cream);font-weight:300;opacity:.92}
+
+        .main{max-width:900px;margin:0 auto;padding:45px 22px 70px}
+
+        .apps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:26px;margin-bottom:50px}
+        .app-card{background:rgba(255,255,255,.97);border-radius:22px;padding:34px 28px;box-shadow:0 12px 40px var(--shadow);text-align:center;position:relative;overflow:hidden}
+        .app-card::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--gold),var(--green),var(--gold))}
+        .app-icon{font-size:3.4rem;margin-bottom:14px}
+        .app-title{font-family:'Amiri',serif;font-size:1.5rem;color:var(--green);font-weight:700;margin-bottom:6px}
+        .app-sub{color:#777;font-size:.92rem;margin-bottom:22px;line-height:1.4}
+        .dl-btn{display:inline-block;width:100%;padding:14px;border-radius:12px;font-weight:700;font-size:1.02rem;text-decoration:none;color:#fff;background:linear-gradient(135deg,var(--green),var(--teal));transition:.25s;cursor:pointer;border:none}
+        .dl-btn:hover{opacity:.9;transform:translateY(-1px)}
+        .dl-btn.disabled{background:#bbb;pointer-events:none}
+        .dl-meta{font-size:.8rem;color:#999;margin-top:10px}
+
+        .moya-section{background:rgba(255,255,255,.97);border-radius:22px;padding:34px 28px;box-shadow:0 12px 40px var(--shadow);text-align:center}
+        .moya-section h2{font-family:'Amiri',serif;color:var(--green);font-size:1.6rem;margin-bottom:10px}
+        .moya-section p{color:#777;font-size:.95rem;margin-bottom:22px;line-height:1.5}
+        .moya-btn{display:inline-block;padding:15px 34px;border-radius:12px;font-weight:700;font-size:1.05rem;color:#222;background:linear-gradient(135deg,var(--gold),#b8972e);border:none;cursor:pointer;transition:.25s}
+        .moya-btn:hover{opacity:.9;transform:translateY(-1px)}
+
+        /* modal */
+        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:999;align-items:center;justify-content:center;padding:20px}
+        .modal-overlay.on{display:flex}
+        .modal{background:#fff;border-radius:20px;padding:34px 30px;max-width:460px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+        .modal h3{font-family:'Amiri',serif;color:var(--green);font-size:1.6rem;margin-bottom:6px;text-align:center}
+        .modal p.sub{text-align:center;color:#888;font-size:.88rem;margin-bottom:22px}
+        .fg{margin-bottom:16px;text-align:left}
+        .fg label{display:block;margin-bottom:7px;font-weight:600;color:#333;font-size:.92rem}
+        .fi{width:100%;padding:11px 14px;border:2px solid #e0e0e0;border-radius:10px;font-size:1rem;font-family:'Tajawal',sans-serif;transition:.25s;outline:none}
+        .fi:focus{border-color:var(--gold)}
+        .loc-row{display:flex;gap:8px}
+        .loc-row .fi{flex:1}
+        .btn-locate{padding:0 14px;border-radius:10px;border:2px solid var(--border,#e0e0e0);background:#fff;cursor:pointer;font-size:1.1rem;flex-shrink:0}
+        .btn-locate:hover{border-color:var(--gold)}
+        .modal-actions{display:flex;gap:10px;margin-top:6px}
+        .btn{padding:12px 22px;border:none;border-radius:9px;font-weight:700;font-size:.95rem;cursor:pointer;transition:.25s;font-family:'Tajawal',sans-serif;flex:1}
+        .btn-green{background:linear-gradient(135deg,var(--green),var(--teal));color:#fff}
+        .btn-gray{background:#9e9e9e;color:#fff}
+        .modal-err{color:var(--red);font-size:.87rem;text-align:center;margin-top:4px;display:none}
+        .modal-err.on{display:block}
+        .modal-success{display:none;text-align:center;padding:10px 0}
+        .modal-success.on{display:block}
+        .modal-success .icon{font-size:3.2rem;margin-bottom:12px}
+
+        footer{text-align:center;padding:30px;color:rgba(255,255,255,.7);font-size:.9rem}
+
+        @media(max-width:600px){ .header-arabic{font-size:2rem} }
+    </style>
+</head>
+<body>
+<div class="app">
+    <header class="header">
+        <div class="header-arabic">اپ ڈاؤن لوڈ کریں</div>
+        <div class="header-english">Download the Mosque Jamaat Apps</div>
+    </header>
+
+    <main class="main">
+        <div class="apps-grid">
+            <div class="app-card">
+                <div class="app-icon">📱</div>
+                <div class="app-title">Main App</div>
+                <div class="app-sub">For everyone — see live prayer, Jummah, Sehri &amp; Iftar times for every mosque.</div>
+                <a class="dl-btn disabled" id="mainDlBtn" href="#">Loading…</a>
+                <div class="dl-meta" id="mainDlMeta"></div>
+            </div>
+            <div class="app-card">
+                <div class="app-icon">🕌</div>
+                <div class="app-title">Moyajjin App</div>
+                <div class="app-sub">For sub-admins — update your mosque's jamaat times and post notices.</div>
+                <a class="dl-btn disabled" id="subDlBtn" href="#">Loading…</a>
+                <div class="dl-meta" id="subDlMeta"></div>
+            </div>
+        </div>
+
+        <div class="moya-section">
+            <h2>🕌 Are you a Moyajjin (Mosque Representative)?</h2>
+            <p>Register your mosque to get sub-admin access. Submit your mosque's name and location — once approved by the admin, you'll be able to log in and manage your mosque's jamaat times.</p>
+            <button class="moya-btn" onclick="openModal()">📝 Moyajin Registation</button>
+        </div>
+    </main>
+
+    <footer>May Allah accept our prayers &nbsp;•&nbsp; جزاک اللہ خیرا</footer>
+</div>
+
+<!-- REGISTRATION MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <div id="formView">
+            <h3>Moyajin Registation</h3>
+            <p class="sub">Submit your mosque details for admin approval</p>
+
+            <div class="fg">
+                <label>Mosque Name</label>
+                <input class="fi" id="rMosqueName" placeholder="e.g. Al-Farooq Masjid">
+            </div>
+            <div class="fg">
+                <label>Location</label>
+                <div class="loc-row">
+                    <input class="fi" id="rLocation" placeholder="Area / address">
+                    <button class="btn-locate" type="button" title="Use my current location" onclick="useMyLocation()">📍</button>
+                </div>
+            </div>
+            <div class="fg">
+                <label>Gmail</label>
+                <input class="fi" id="rEmail" type="email" placeholder="yourname@gmail.com">
+            </div>
+            <div class="fg">
+                <label>Password</label>
+                <input class="fi" id="rPassword" type="password" placeholder="Choose a password">
+            </div>
+            <div class="modal-err" id="modalErr"></div>
+            <div class="modal-actions">
+                <button class="btn btn-gray" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-green" onclick="submitRegistration()">Submit Request</button>
+            </div>
+        </div>
+
+        <div class="modal-success" id="successView">
+            <div class="icon">✅</div>
+            <h3>Request Submitted!</h3>
+            <p class="sub" style="margin-top:10px">Your registration has been sent to the admin for review. Once approved, you'll be able to log in to the Moyajjin app with the Gmail &amp; password you provided.</p>
+            <div class="modal-actions" style="margin-top:20px">
+                <button class="btn btn-green" style="flex:1" onclick="closeModal()">Done</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+  import { getDatabase, ref, push, set, onValue }
+    from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey:            "AIzaSyDa2rZvHFvQUVbxADMbm6Y3Luy0vTqOops",
+    authDomain:        "mosque-times-506dd.firebaseapp.com",
+    databaseURL:       "https://mosque-times-506dd-default-rtdb.firebaseio.com",
+    projectId:         "mosque-times-506dd",
+    storageBucket:     "mosque-times-506dd.firebasestorage.app",
+    messagingSenderId: "851807138207",
+    appId:             "1:851807138207:web:1d2a103718debd15450daa",
+    measurementId:     "G-4MTXBD8NT5"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getDatabase(app);
+
+  function el(id){ return document.getElementById(id); }
+
+  /* ── APK DOWNLOAD LINKS (live from Firebase) ── */
+  onValue(ref(db,'settings/apks'), function(snap) {
+    const data = snap.val() || {};
+    setDlButton('main', data.main);
+    setDlButton('subadmin', data.subadmin);
+  }, function(err){
+    console.error('apks read failed:', err.message);
+  });
+
+  function setDlButton(kind, info) {
+    const btn  = kind==='main' ? el('mainDlBtn') : el('subDlBtn');
+    const meta = kind==='main' ? el('mainDlMeta') : el('subDlMeta');
+    if(info && info.url){
+      btn.href = info.url;
+      btn.textContent = '⬇️ Download APK';
+      btn.classList.remove('disabled');
+      btn.removeAttribute('target');
+      btn.setAttribute('download','');
+      const sizeMb = info.size ? (info.size/1024/1024).toFixed(1)+' MB' : '';
+      meta.textContent = sizeMb ? `${info.fileName||'app.apk'} • ${sizeMb}` : (info.fileName||'');
+    } else {
+      btn.href = '#';
+      btn.textContent = 'Coming Soon';
+      btn.classList.add('disabled');
+      meta.textContent = '';
+    }
+  }
+
+  /* ── REGISTRATION MODAL ── */
+  window.openModal = function(){
+    el('formView').style.display = '';
+    el('successView').classList.remove('on');
+    el('modalErr').classList.remove('on');
+    el('modalOverlay').classList.add('on');
+  };
+  window.closeModal = function(){
+    el('modalOverlay').classList.remove('on');
+    el('rMosqueName').value='';
+    el('rLocation').value='';
+    el('rEmail').value='';
+    el('rPassword').value='';
+  };
+
+  window.useMyLocation = function(){
+    if(!navigator.geolocation){
+      alert('Location is not supported on this browser. Please type it manually.');
+      return;
+    }
+    const locInput = el('rLocation');
+    const original = locInput.placeholder;
+    locInput.placeholder = 'Detecting location…';
+    navigator.geolocation.getCurrentPosition(function(pos){
+      const lat = pos.coords.latitude.toFixed(6);
+      const lng = pos.coords.longitude.toFixed(6);
+      locInput.value = `${lat}, ${lng}`;
+      locInput.placeholder = original;
+    }, function(){
+      locInput.placeholder = original;
+      alert('Could not detect your location. Please type it manually.');
+    });
+  };
+
+  window.submitRegistration = function(){
+    const mosqueName = el('rMosqueName').value.trim();
+    const location   = el('rLocation').value.trim();
+    const email       = el('rEmail').value.trim();
+    const password    = el('rPassword').value.trim();
+    const errBox      = el('modalErr');
+
+    if(!mosqueName || !email || !password){
+      errBox.textContent = '❌ Mosque name, Gmail, and password are required';
+      errBox.classList.add('on');
+      return;
+    }
+    if(!/^\S+@\S+\.\S+$/.test(email)){
+      errBox.textContent = '❌ Please enter a valid email address';
+      errBox.classList.add('on');
+      return;
+    }
+    if(password.length < 6){
+      errBox.textContent = '❌ Password should be at least 6 characters';
+      errBox.classList.add('on');
+      return;
+    }
+    errBox.classList.remove('on');
+
+    const newRef = push(ref(db,'moyajjinRequests'));
+    set(newRef,{
+      mosqueName:  mosqueName,
+      location:    location,
+      email:       email,
+      password:    password,
+      status:      'pending',
+      requestedAt: Date.now()
+    }).then(()=>{
+      el('formView').style.display = 'none';
+      el('successView').classList.add('on');
+    }).catch(e=>{
+      errBox.textContent = '❌ ' + e.message;
+      errBox.classList.add('on');
+    });
+  };
+</script>
+</body>
+</html>

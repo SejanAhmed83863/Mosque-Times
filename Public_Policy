@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy - Mosque Jamaat Prayer Times</title>
+<style>
+  :root {
+    --accent: #1f6f5c;
+    --text: #222;
+    --muted: #666;
+    --bg: #fafafa;
+    --card: #ffffff;
+    --border: #e5e5e5;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+  }
+  header {
+    background: var(--accent);
+    color: #fff;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+  }
+  header h1 {
+    margin: 0 0 0.4rem;
+    font-size: 1.6rem;
+  }
+  header p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 0.95rem;
+  }
+  main {
+    max-width: 760px;
+    margin: -1.5rem auto 3rem;
+    padding: 0 1.5rem;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  h2 {
+    font-size: 1.15rem;
+    color: var(--accent);
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.3rem;
+  }
+  h2:first-child { margin-top: 0; }
+  p { margin: 0.6rem 0; }
+  ul {
+    margin: 0.5rem 0;
+    padding-left: 1.4rem;
+  }
+  li { margin: 0.25rem 0; }
+  .intro {
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+    padding: 1rem 1.5rem 2.5rem;
+  }
+  a { color: var(--accent); }
+  strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Privacy Policy</h1>
+  <p>Mosque Jamaat Prayer Times &middot; Last Updated: August 17, 2026</p>
+</header>
+
+<main>
+  <div class="card">
+    <p class="intro">
+      Welcome to Mosque Jamaat Prayer Times (&ldquo;the App&rdquo;). We respect your privacy
+      and are committed to protecting any information you may provide while using our App.
+      This Privacy Policy explains what information the App collects, how it is used, stored,
+      and shared.
+    </p>
+
+    <h2>1. Information We Collect</h2>
+    <p>The App is designed to provide mosque prayer times and does not require users to create an account.</p>
+    <p>We may process the following information:</p>
+
+    <p><strong>A. Mosque Information</strong></p>
+    <p>The App displays information such as:</p>
+    <ul>
+      <li>Mosque names</li>
+      <li>Mosque areas or locations</li>
+      <li>Jamaat prayer times</li>
+      <li>Jummah times</li>
+      <li>Sehri and Iftar times</li>
+      <li>Custom prayer or event timings</li>
+      <li>Mosque announcements or notices</li>
+    </ul>
+    <p>This information is provided through our database and is intended for public display.</p>
+
+    <p><strong>B. Search Information</strong></p>
+    <p>When you search for a mosque by name or area, the search is processed locally within the App. Search terms are not intentionally sent to us or stored on our servers.</p>
+
+    <p><strong>C. Pinned Mosque Information</strong></p>
+    <p>When you pin a mosque, the App stores the selected mosque ID locally on your device using browser/device storage. This information is used only to remember your preferred mosque and does not require an account.</p>
+
+    <p><strong>D. Offline Data</strong></p>
+    <p>The App may store the most recently downloaded mosque information locally on your device so that prayer times can remain available when you are temporarily offline.</p>
+
+    <h2>2. Firebase</h2>
+    <p>The App uses Firebase Realtime Database to retrieve mosque information, prayer times, announcements, and other app data.</p>
+    <p>Firebase may process technical information necessary to provide its services. The App itself does not intentionally collect sensitive personal information through Firebase.</p>
+
+    <h2>3. Personal Information</h2>
+    <p>The App does not intentionally collect:</p>
+    <ul>
+      <li>Your name</li>
+      <li>Phone number</li>
+      <li>Email address</li>
+      <li>Passwords</li>
+      <li>Contacts</li>
+      <li>Photos</li>
+      <li>Messages</li>
+      <li>Payment information</li>
+      <li>Government identification information</li>
+      <li>Precise personal location</li>
+    </ul>
+    <p>The App does not require users to register or create an account.</p>
+
+    <h2>4. Location Information</h2>
+    <p>The App does not require access to your device's GPS or precise location.</p>
+    <p>Mosque areas and locations displayed in the App are information provided in the mosque database and are not obtained from the user's device location.</p>
+
+    <h2>5. Cookies and Local Storage</h2>
+    <p>The App may use browser/device local storage to:</p>
+    <ul>
+      <li>Remember your pinned mosque</li>
+      <li>Cache recently downloaded mosque information</li>
+      <li>Remember information needed for offline functionality</li>
+    </ul>
+    <p>This information remains on your device and can generally be removed by clearing the App's data or browser storage.</p>
+
+    <h2>6. How We Use Information</h2>
+    <p>Information available through the App is used to:</p>
+    <ul>
+      <li>Display mosque prayer times</li>
+      <li>Display mosque announcements</li>
+      <li>Provide mosque-related information</li>
+      <li>Allow users to search for mosques</li>
+      <li>Remember a user's pinned mosque</li>
+      <li>Provide offline access to recently loaded information</li>
+      <li>Maintain and improve the App</li>
+    </ul>
+    <p>We do not sell users' personal information.</p>
+
+    <h2>7. Data Sharing</h2>
+    <p>We do not intentionally sell, rent, or trade users' personal information.</p>
+    <p>Information may be processed by third-party service providers when necessary to operate the App, such as Firebase services used for database functionality.</p>
+    <p>We may also disclose information if required by applicable law, legal process, or a valid governmental request.</p>
+
+    <h2>8. Data Security</h2>
+    <p>We take reasonable measures to protect information used by the App.</p>
+    <p>However, no internet-based service or electronic storage system can be guaranteed to be completely secure. Therefore, we cannot guarantee absolute security of information transmitted or stored through third-party services.</p>
+
+    <h2>9. Children's Privacy</h2>
+    <p>The App is intended for general audiences and does not intentionally collect personal information from children.</p>
+    <p>Because the App does not require account registration and does not intentionally collect personal information, children can use the App to view publicly available mosque prayer information.</p>
+    <p>Parents or guardians who believe that a child has provided personal information to us may contact us so that we can review the matter.</p>
+
+    <h2>10. Third-Party Services</h2>
+    <p>The App may use third-party services, including Firebase, to provide database and hosting-related functionality.</p>
+    <p>These third-party services may have their own privacy policies and terms of service. Users should review the privacy policies of the relevant service providers for additional information about how they process data.</p>
+
+    <h2>11. Mosque Information Accuracy</h2>
+    <p>Prayer times, announcements, and other mosque information may be provided or updated by administrators or other authorized sources.</p>
+    <p>While we try to keep the information accurate and up to date, we cannot guarantee that every displayed prayer time or announcement will always be completely accurate.</p>
+    <p>Users should verify important prayer times with their local mosque when necessary.</p>
+
+    <h2>12. Changes to This Privacy Policy</h2>
+    <p>We may update this Privacy Policy from time to time.</p>
+    <p>When changes are made, the updated policy will be published with a new &ldquo;Last Updated&rdquo; date.</p>
+    <p>We encourage users to periodically review this Privacy Policy.</p>
+
+    <h2>13. Your Rights</h2>
+    <p>Depending on applicable laws, you may have rights regarding personal information associated with your use of the App.</p>
+    <p>Since the App does not intentionally collect user accounts or personal profiles, there may be little or no personal information directly associated with individual users.</p>
+    <p>For privacy-related requests or questions, please contact us using the contact information provided below.</p>
+
+    <h2>14. Contact Us</h2>
+    <p>If you have any questions, concerns, or requests regarding this Privacy Policy or the App, please contact:</p>
+    <p>
+      <strong>App Name:</strong> Mosque Jamaat Prayer Times<br>
+      <strong>Developer:</strong> [Your Name / Organization]<br>
+      <strong>Email:</strong> [Your Email Address]<br>
+      <strong>Website:</strong> [Your Website, if available]
+    </p>
+
+    <h2>15. Acceptance of This Privacy Policy</h2>
+    <p>By using Mosque Jamaat Prayer Times, you acknowledge that you have read and understood this Privacy Policy.</p>
+    <p>If you do not agree with this Privacy Policy, please discontinue use of the App.</p>
+  </div>
+</main>
+
+<footer>
+  &copy; 2026 Mosque Jamaat Prayer Times. All rights reserved.
+</footer>
+
+</body>
+</html>
